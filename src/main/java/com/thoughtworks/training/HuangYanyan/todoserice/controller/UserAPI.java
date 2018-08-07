@@ -27,7 +27,7 @@ public class UserAPI {
     }
 
     @GetMapping("/users")
-    public List<User> select() {
+    public User select() {
         return userService.list();
     }
 
@@ -36,11 +36,14 @@ public class UserAPI {
     public ResponseEntity<String> login(@RequestBody User user) {
 
         String userName = user.getName();
-        String userPassword = user.getPassword();
+        String password = user.getPassword();
 
-        if (userService.verify(userName, userPassword)) {
+        if (userService.verify(userName, password)) {
 
-            String token = userService.generateToken(userName);
+            User userByName = userService.findOneByName(userName);
+            int userId = userByName.getId();
+
+            String token = userService.generateToken(userId, userName);
 
             return ResponseEntity.ok(token);
         }
@@ -48,16 +51,16 @@ public class UserAPI {
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/users/verifications")
-    public User verifyToken(@RequestBody String token){
+    @PostMapping("/verifications")
+    public User verifyToken(@RequestBody String token) {
 
-        Integer userId = Jwts.parser()
-                .setSigningKey("kitty".getBytes(Charset.forName("UTF-8")))
-                .parseClaimsJws(token)
-                .getBody()
-                .get("userId", Integer.class);
+        return userService.getUserByToken(token);
 
-        return userService.findUserById(userId);
+    }
 
+    @PostMapping("/getUserIdByName")
+    public int getUserIdByName(@RequestBody String name){
+        User user = userService.findOneByName(name);
+        return user.getId();
     }
 }

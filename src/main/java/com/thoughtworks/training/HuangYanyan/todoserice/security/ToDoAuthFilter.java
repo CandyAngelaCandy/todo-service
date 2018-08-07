@@ -36,27 +36,43 @@ public class ToDoAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        System.out.println("token---1111------" );
 //        try {
-
-            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        System.out.println("token---------" + token);
-
-            if (!StringUtils.isEmpty(token)) {
-                User user = findUserByToken(token);
-
-                SecurityContextHolder.getContext().setAuthentication(
-                        new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList()));
-
-                User userhh = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-                System.out.println(userhh.getId());
-            }
-
+//
+//            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+//
+//            if (!StringUtils.isEmpty(token)) {
+//                User user = findUserByToken(token);
+//
+//                SecurityContextHolder.getContext().setAuthentication(
+//                        new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList()));
+//
+//                User userhh = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//                System.out.println(userhh.getId());
+//            }
+//
 //        } catch (RuntimeException e) {
 //            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, String.format("authentication failed: %s", e.getMessage()));
 //            return;
 //        }
+
+        try {
+            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (!StringUtils.isEmpty(token)) {
+
+                String[] userInfo = token.split(":");
+                int userId = Integer.parseInt(userInfo[0]);
+                User user = userRepository.findOne(userId).get();
+
+                SecurityContextHolder.getContext().setAuthentication(
+                        new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList()));
+
+            }
+
+        } catch (RuntimeException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, String.format("authentication failed: %s", e.getMessage()));
+            return;
+        }
 
 
         filterChain.doFilter(request, response);
@@ -70,6 +86,13 @@ public class ToDoAuthFilter extends OncePerRequestFilter {
         return userService.verify(userName, password);
     }
 
+
+//    private boolean validateInternalToken(String token) {
+//        String[] userInfo = token.split(":");
+//        int userId = Integer.parseInt(userInfo[0]);
+//        String userName = userInfo[1];
+//        return userService.verifyInternalToken(userId,userName);
+//    }
 
     public User findUserByToken(String token) {
 

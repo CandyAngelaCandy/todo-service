@@ -2,9 +2,11 @@ package com.thoughtworks.training.huangyanyan.todoserice.service;
 
 import com.thoughtworks.training.huangyanyan.todoserice.model.User;
 import com.thoughtworks.training.huangyanyan.todoserice.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +39,10 @@ public class UserService {
 
     }
 
-    public List<User> list() {
-        return userRepository.findAll();
+    public User list() {
+        User user= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return userRepository.findOne(user.getId()).get();
     }
 
     public void save(User user) {
@@ -47,16 +51,17 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public String generateToken(String userName) {
-        User user = userRepository.findByName(userName).get();
+    public String generateToken(int userId,String userName) {
+      //  User user = userRepository.findByName(userName).get();
 
         String secretKey = "kitty";
 
         HashMap<String, Object> claims = new HashMap<>();
 
-        System.out.println(user.getId());
+//        System.out.println(user.getId());
 
-        claims.put("userId", user.getId());
+        claims.put("userId", userId);
+        claims.put("userName",userName);
 
         String token = Jwts.builder()
                 .addClaims(claims)
@@ -68,5 +73,40 @@ public class UserService {
 
     public User findUserById(Integer userId) {
         return userRepository.findOne(userId);
+    }
+
+    public boolean verifyInternalToken(int userId, String userName) {
+
+        if(userRepository.findOne(userId).isPresent()){
+
+            User user = userRepository.findOne(userId).get();
+
+            return user.getName().equals(userName);
+        }
+        return false;
+
+    }
+
+    public User getUserByToken(String token) {
+
+        Claims TokenClaims = Jwts.parser()
+                .setSigningKey("kitty".getBytes(Charset.forName("UTF-8")))
+                .parseClaimsJws(token)
+                .getBody();
+
+        Integer userId = TokenClaims.get("userId", Integer.class);
+        String userName = TokenClaims.get("userName",String.class);
+
+        User user = userRepository.findOne(userId);
+
+         if(user.getName().equals(userName)){
+                return user;
+         }
+        return null;
+
+    }
+
+    public User findOneByName(String userName) {
+        return userRepository.findByName(userName).get();
     }
 }
