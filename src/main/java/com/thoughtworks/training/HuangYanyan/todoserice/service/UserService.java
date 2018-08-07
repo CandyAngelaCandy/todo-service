@@ -65,4 +65,8 @@ public class UserService {
 
         return token;
     }
+
+    public User findUserById(Integer userId) {
+        return userRepository.findOne(userId);
+    }
 }

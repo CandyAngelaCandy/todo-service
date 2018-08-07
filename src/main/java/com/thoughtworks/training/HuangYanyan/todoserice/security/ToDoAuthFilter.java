@@ -36,10 +36,11 @@ public class ToDoAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-
-        try {
+        System.out.println("token---1111------" );
+//        try {
 
             String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        System.out.println("token---------" + token);
 
             if (!StringUtils.isEmpty(token)) {
                 User user = findUserByToken(token);
@@ -52,10 +53,10 @@ public class ToDoAuthFilter extends OncePerRequestFilter {
                 System.out.println(userhh.getId());
             }
 
-        } catch (RuntimeException e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, String.format("authentication failed: %s", e.getMessage()));
-            return;
-        }
+//        } catch (RuntimeException e) {
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, String.format("authentication failed: %s", e.getMessage()));
+//            return;
+//        }
 
 
         filterChain.doFilter(request, response);
