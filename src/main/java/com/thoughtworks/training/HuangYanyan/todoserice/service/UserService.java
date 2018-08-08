@@ -51,26 +51,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public String generateToken(int userId,String userName) {
-      //  User user = userRepository.findByName(userName).get();
-
-        String secretKey = "kitty";
-
-        HashMap<String, Object> claims = new HashMap<>();
-
-//        System.out.println(user.getId());
-
-        claims.put("userId", userId);
-        claims.put("userName",userName);
-
-        String token = Jwts.builder()
-                .addClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, secretKey.getBytes(Charset.forName("UTF-8")))
-                .compact();
-
-        return token;
-    }
-
     public User findUserById(Integer userId) {
         return userRepository.findOne(userId);
     }

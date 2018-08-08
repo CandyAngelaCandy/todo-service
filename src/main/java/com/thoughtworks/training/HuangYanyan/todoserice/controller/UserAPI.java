@@ -31,26 +31,6 @@ public class UserAPI {
         return userService.list();
     }
 
-
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
-
-        String userName = user.getName();
-        String password = user.getPassword();
-
-        if (userService.verify(userName, password)) {
-
-            User userByName = userService.findOneByName(userName);
-            int userId = userByName.getId();
-
-            String token = userService.generateToken(userId, userName);
-
-            return ResponseEntity.ok(token);
-        }
-
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
-    }
-
     @PostMapping("/verifications")
     public User verifyToken(@RequestBody String token) {
 
