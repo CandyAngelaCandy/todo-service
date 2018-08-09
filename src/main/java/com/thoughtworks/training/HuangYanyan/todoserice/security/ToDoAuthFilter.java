@@ -4,6 +4,7 @@ import com.thoughtworks.training.huangyanyan.todoserice.model.User;
 import com.thoughtworks.training.huangyanyan.todoserice.repository.UserRepository;
 import com.thoughtworks.training.huangyanyan.todoserice.service.UserService;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
 
+@Slf4j
 @Component
 public class ToDoAuthFilter extends OncePerRequestFilter {
 
@@ -36,26 +38,8 @@ public class ToDoAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-//        try {
-//
-//            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-//
-//            if (!StringUtils.isEmpty(token)) {
-//                User user = findUserByToken(token);
-//
-//                SecurityContextHolder.getContext().setAuthentication(
-//                        new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList()));
-//
-//                User userhh = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//
-//                System.out.println(userhh.getId());
-//            }
-//
-//        } catch (RuntimeException e) {
-//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, String.format("authentication failed: %s", e.getMessage()));
-//            return;
-//        }
 
+        log.info("incoming request {}",request.getServletPath());
         try {
             String token = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (!StringUtils.isEmpty(token)) {

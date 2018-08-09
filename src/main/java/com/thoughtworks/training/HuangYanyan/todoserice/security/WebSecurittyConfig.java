@@ -33,6 +33,7 @@ public class WebSecurittyConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/login","/verifications","/getUserIdByName").permitAll()
                 .antMatchers(HttpMethod.GET, "/users", "/todolist").permitAll()
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
+                .antMatchers(HttpMethod.GET, "/health").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(toDoAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(unauthorizeEntryPoint);
