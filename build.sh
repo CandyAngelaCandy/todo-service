@@ -2,7 +2,7 @@
 
 ./gradlew clean bootRepackage
 
-docker build --rm . --tag huangyanyan/user-service:${VER:?invalid version}
+//docker build --rm . --tag huangyanyan/user-service:${VER:?invalid version}
 docker push huangyanyan/user-service:${VER:?invalid version}
 
 export VER

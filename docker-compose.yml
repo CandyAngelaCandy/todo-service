@@ -17,7 +17,7 @@ services:
     ports:
       - "3306:3306"
   config-server:
-    image: huangyanyan/config-server:${VER}
+    image: huangyanyan/config-server:1
     networks:
       todo:
         aliases:
@@ -27,7 +27,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
   gateway:
-    image: huangyanyan/gateway:${VER}
+    image: huangyanyan/gateway:1
     depends_on:
       - config-server
     networks:
@@ -39,7 +39,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
   user-service:
-    image: huangyanyan/user-service:${VER}
+    image: huangyanyan/user-service:1
     deploy:
       replicas: 2
       restart_policy:
@@ -57,7 +57,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=default
   todo-service:
-    image: huangyanyan/todo-service:${VER}
+    image: huangyanyan/todo-service:2
     deploy:
       replicas: 2
       restart_policy:
@@ -74,6 +74,24 @@ services:
       - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=default
+#  todo-list-redux:
+#    image: huangyanyan/todo-list-redux:3
+#    deploy:
+#      replicas: 2
+#      restart_policy:
+#        delay: 10s
+#    depends_on:
+#      - mysql
+#      - config-server
+#      - gateway
+#      - todo-service
+#      - user-service
+#    networks:
+#      todo:
+#        aliases:
+#          - todo-list-redux
+#    ports:
+#      - "3000:3000"
 
 
 
